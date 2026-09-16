@@ -1,0 +1,70 @@
+test_available_axis_constraint (test_engine.TestEngine.test_available_axis_constraint) ... ok
+test_axis_change_does_not_change_mean_power (test_engine.TestEngine.test_axis_change_does_not_change_mean_power) ... ok
+test_baseline_is_not_added_to_primary_target (test_engine.TestEngine.test_baseline_is_not_added_to_primary_target) ... ok
+test_clockwise_ten_demo (test_engine.TestEngine.test_clockwise_ten_demo) ... ok
+test_counterclockwise_ten_demo (test_engine.TestEngine.test_counterclockwise_ten_demo) ... ok
+test_csv_has_bom_and_all_rows (test_engine.TestEngine.test_csv_has_bom_and_all_rows) ... ok
+test_current_spherical_lens_rejected (test_engine.TestEngine.test_current_spherical_lens_rejected) ... ok
+test_cylinder_mismatch_leaves_nonzero_lower_bound (test_engine.TestEngine.test_cylinder_mismatch_leaves_nonzero_lower_bound) ... ok
+test_eye_side_does_not_invert_sign (test_engine.TestEngine.test_eye_side_does_not_invert_sign) ... ok
+test_formatted_zero_cylinder_hides_axis (test_engine.TestEngine.test_formatted_zero_cylinder_hides_axis) ... ok
+test_half_step_tie_prefers_current_label (test_engine.TestEngine.test_half_step_tie_prefers_current_label) ... ok
+test_high_power_with_separate_vertex_distances (test_engine.TestEngine.test_high_power_with_separate_vertex_distances) ... ok
+test_invalid_case_parameters (test_engine.TestEngine.test_invalid_case_parameters) ... ok
+test_json_export_contains_inputs_assumptions_and_candidates (test_engine.TestEngine.test_json_export_contains_inputs_assumptions_and_candidates) ... ok
+test_next_spherical_lens_no_axis_recommendation (test_engine.TestEngine.test_next_spherical_lens_no_axis_recommendation) ... ok
+test_no_rotation_no_residual (test_engine.TestEngine.test_no_rotation_no_residual) ... ok
+test_no_target_astigmatism_no_axis_recommendation (test_engine.TestEngine.test_no_target_astigmatism_no_axis_recommendation) ... ok
+test_plus_cylinder_over_refraction_equivalent (test_engine.TestEngine.test_plus_cylinder_over_refraction_equivalent) ... ok
+test_separate_next_rotation (test_engine.TestEngine.test_separate_next_rotation) ... ok
+test_sphere_change_affects_mean_not_axis_optimum (test_engine.TestEngine.test_sphere_change_affects_mean_not_axis_optimum) ... ok
+test_text_export_is_self_contained (test_engine.TestEngine.test_text_export_is_self_contained) ... ok
+test_unstable_case_warns (test_engine.TestEngine.test_unstable_case_warns) ... ok
+test_zero_over_refraction_does_not_apply_rotation_twice (test_engine.TestEngine.test_zero_over_refraction_does_not_apply_rotation_twice) ... ok
+test_analytic_optimum_matches_dense_search_100_cases (test_optics.TestOptics.test_analytic_optimum_matches_dense_search_100_cases) ... ok
+test_candidate_grids_unique_periodic (test_optics.TestOptics.test_candidate_grids_unique_periodic) ... ok
+test_clockwise_causes_decreasing_on_eye_axis (test_optics.TestOptics.test_clockwise_causes_decreasing_on_eye_axis) ... ok
+test_clockwise_demo_over_refraction (test_optics.TestOptics.test_clockwise_demo_over_refraction) ... ok
+test_counterclockwise_causes_increasing_on_eye_axis (test_optics.TestOptics.test_counterclockwise_causes_increasing_on_eye_axis) ... ok
+test_custom_axes_japanese_and_duplicates (test_optics.TestOptics.test_custom_axes_japanese_and_duplicates) ... ok
+test_cylinder_requires_axis (test_optics.TestOptics.test_cylinder_requires_axis) ... ok
+test_invalid_axes (test_optics.TestOptics.test_invalid_axes) ... ok
+test_known_power_vectors (test_optics.TestOptics.test_known_power_vectors) ... ok
+test_manufacturer_caas_examples (test_optics.TestOptics.test_manufacturer_caas_examples) ... ok
+test_non_finite_input_rejected (test_optics.TestOptics.test_non_finite_input_rejected) ... ok
+test_plus_cylinder_lens_is_rejected (test_optics.TestOptics.test_plus_cylinder_lens_is_rejected) ... ok
+test_residual_cylinder_rotation_law (test_optics.TestOptics.test_residual_cylinder_rotation_law) ... ok
+test_rotation_order_inverse (test_optics.TestOptics.test_rotation_order_inverse) ... ok
+test_rotation_range_contains_sampled_values_200_cases (test_optics.TestOptics.test_rotation_range_contains_sampled_values_200_cases) ... ok
+test_rotation_range_finds_interior_maximum (test_optics.TestOptics.test_rotation_range_finds_interior_maximum) ... ok
+test_rotation_range_finds_interior_minimum (test_optics.TestOptics.test_rotation_range_finds_interior_minimum) ... ok
+test_round_trip_1000_random_spherocylinders (test_optics.TestOptics.test_round_trip_1000_random_spherocylinders) ... ok
+test_smallest_axis_difference_crosses_boundary (test_optics.TestOptics.test_smallest_axis_difference_crosses_boundary) ... ok
+test_sphere_has_no_axis (test_optics.TestOptics.test_sphere_has_no_axis) ... ok
+test_sphere_or_no_target_astigmatism_has_no_unique_optimum (test_optics.TestOptics.test_sphere_or_no_target_astigmatism_has_no_unique_optimum) ... ok
+test_transpose_plus_cylinder (test_optics.TestOptics.test_transpose_plus_cylinder) ... ok
+test_vector_addition_matches_independent_matrix_500_cases (test_optics.TestOptics.test_vector_addition_matches_independent_matrix_500_cases) ... ok
+test_vertex_both_meridians (test_optics.TestOptics.test_vertex_both_meridians) ... ok
+test_vertex_pole_rejected (test_optics.TestOptics.test_vertex_pole_rejected) ... ok
+test_vertex_round_trip (test_optics.TestOptics.test_vertex_round_trip) ... ok
+test_zero_and_180_are_identical (test_optics.TestOptics.test_zero_and_180_are_identical) ... ok
+test_zero_rotation_range_width (test_optics.TestOptics.test_zero_rotation_range_width) ... ok
+test_zero_vertex_preserves_power (test_optics.TestOptics.test_zero_vertex_preserves_power) ... ok
+test_changed_input_hides_stale_result (test_ui.TestStreamlitUI.test_changed_input_hides_stale_result) ... skipped 'Streamlit is not installed; UI execution was NOT verified in this environment.'
+test_changed_next_power (test_ui.TestStreamlitUI.test_changed_next_power) ... skipped 'Streamlit is not installed; UI execution was NOT verified in this environment.'
+test_clear_removes_results (test_ui.TestStreamlitUI.test_clear_removes_results) ... skipped 'Streamlit is not installed; UI execution was NOT verified in this environment.'
+test_clockwise_demo (test_ui.TestStreamlitUI.test_clockwise_demo) ... skipped 'Streamlit is not installed; UI execution was NOT verified in this environment.'
+test_consent_required (test_ui.TestStreamlitUI.test_consent_required) ... skipped 'Streamlit is not installed; UI execution was NOT verified in this environment.'
+test_counterclockwise_demo (test_ui.TestStreamlitUI.test_counterclockwise_demo) ... skipped 'Streamlit is not installed; UI execution was NOT verified in this environment.'
+test_custom_candidates (test_ui.TestStreamlitUI.test_custom_candidates) ... skipped 'Streamlit is not installed; UI execution was NOT verified in this environment.'
+test_empty_values_produce_validation_message (test_ui.TestStreamlitUI.test_empty_values_produce_validation_message) ... skipped 'Streamlit is not installed; UI execution was NOT verified in this environment.'
+test_initial_ui (test_ui.TestStreamlitUI.test_initial_ui) ... skipped 'Streamlit is not installed; UI execution was NOT verified in this environment.'
+test_candidate_and_best_marker_counts (test_visuals.TestVisuals.test_candidate_and_best_marker_counts) ... ok
+test_curve_endpoints_periodic (test_visuals.TestVisuals.test_curve_endpoints_periodic) ... ok
+test_figures_serialize_without_non_finite_values (test_visuals.TestVisuals.test_figures_serialize_without_non_finite_values) ... ok
+test_frontal_clockwise_marker_moves_left (test_visuals.TestVisuals.test_frontal_clockwise_marker_moves_left) ... ok
+
+----------------------------------------------------------------------
+Ran 65 tests in 0.956s
+
+OK (skipped=9)
