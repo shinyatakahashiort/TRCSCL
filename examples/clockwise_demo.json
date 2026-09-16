@@ -1,16 +1,16 @@
 {
-  "schema_version": "1.0",
-  "app_version": "0.1.0",
-  "created_at_utc": "2026-09-16T20:59:47.573905+00:00",
+  "schema_version": "2.0",
+  "app_version": "0.2.0",
+  "created_at_utc": "2026-09-16T22:31:12.777364+00:00",
   "purpose": "unvalidated research / education simulation, not a prescription",
-  "model_warning": "教育・研究用の未臨床検証プロトタイプ。薄レンズ・同一角膜面でのベクトル和を仮定。次レンズの回転が入力どおり再現することを仮定し、視力・フィッティング・安全性は予測しない。結果は処方確定値ではない。自覚的追加矯正、装用状態および再装用後の評価が必要。",
+  "model_warning": "回転の実測値は使用していません。装用前と装用後の屈折値から眼上軸を推定し、次レンズでも同じ回転が生じると仮定した参考計算です。屈折状態が変わらず、レンズの効果を同一角膜面の薄レンズとして表せることを仮定します。この推定方式は臨床未検証で、実測した回転量の代用を保証するものではありません。",
   "convention": "検者が患者の正面から見た時計回りを正とする。眼上軸=表示軸−回転量（180°周期）。右眼・左眼で符号を反転しない。",
   "objective": "Minimize corneal-plane residual |C|; keep selected next S/C fixed.",
-  "basis": "on-eye current SCL vector + vertex-corrected OVER-refraction vector",
+  "basis": "baseline minus over-refraction estimates lens orientation; fitted nominal SCL plus over-refraction estimates target",
   "input": {
     "eye": "OD",
     "source": "架空デモ",
-    "rotation_stability": "安定している",
+    "rotation_stability": "未確認",
     "over_refraction_measurement_type": "他覚的屈折（SCL装用下）",
     "baseline": {
       "S_D": -3.0,
@@ -23,18 +23,16 @@
       "C_D": -1.25,
       "axis_deg": 180.0
     },
-    "current_rotation_cw_deg": 10.0,
     "over_refraction": {
-      "S_D": 0.21706022208366285,
-      "C_D": -0.4341204441673257,
-      "axis_deg": 40.000000000000014
+      "S_D": 0.22,
+      "C_D": -0.43,
+      "axis_deg": 40.0
     },
     "over_refraction_vertex_mm": 0,
     "next_SCL_S_C_fixed": {
       "S_D": -3.0,
       "C_D": -1.25
     },
-    "assumed_next_rotation_cw_deg": 10.0,
     "candidate_axes_deg": [
       10.0,
       20.0,
@@ -65,432 +63,409 @@
       "axis_deg": 180.0
     },
     "over_refraction_cornea": {
-      "S_D": 0.21706022208366285,
-      "C_D": -0.4341204441673257,
-      "axis_deg": 40.000000000000014
-    },
-    "current_on_eye_SCL": {
-      "S_D": -3.0,
-      "C_D": -1.25,
-      "axis_deg": 170.0
+      "S_D": 0.22,
+      "C_D": -0.43,
+      "axis_deg": 40.0
     },
     "inferred_total_required_correction_cornea": {
-      "S_D": -3.0,
-      "C_D": -1.25,
-      "axis_deg": 180.0
+      "S_D": -2.9946665142032827,
+      "C_D": -1.2506669715934347,
+      "axis_deg": 179.99449569003008
     },
     "inferred_total_power_vector": {
-      "M_D": -3.625,
-      "J0_D": 0.625,
-      "J45_D": 0.0
+      "M_D": -3.62,
+      "J0_D": 0.6253334742541563,
+      "J45_D": -0.00012014948914113033
     },
     "inferred_minus_baseline_vector": {
-      "M_D": 0.0,
-      "J0_D": 0.0,
-      "J45_D": 0.0
+      "M_D": 0.004999999999999893,
+      "J0_D": 0.0003334742541563074,
+      "J45_D": -0.00012014948914113033
     },
     "baseline_predicted_current_residual_cornea": {
-      "S_D": 0.21706022208366285,
-      "C_D": -0.4341204441673257,
-      "axis_deg": 40.000000000000014
+      "S_D": 0.21506070057147156,
+      "C_D": -0.4301214011429431,
+      "axis_deg": 40.04652595083981
+    },
+    "estimated_current_on_eye_SCL": {
+      "S_D": -3.0,
+      "C_D": -1.25,
+      "axis_deg": 170.09305190167962
     }
   },
   "result": {
     "best_available_candidate": {
       "label_axis_deg": 10.0,
-      "predicted_on_eye_axis_deg": 180.0,
+      "predicted_on_eye_axis_deg": 0.09305190167961541,
       "residual_cornea": {
-        "S_D": 0.0,
-        "C_D": 0.0,
-        "axis_deg": null
+        "S_D": 0.007176436521154407,
+        "C_D": -0.004352873042309029,
+        "axis_deg": 139.45071796372883
       },
       "residual_over_refraction_plane": {
-        "S_D": 0.0,
-        "C_D": 0.0,
-        "axis_deg": null
+        "S_D": 0.007176436521154407,
+        "C_D": -0.004352873042309029,
+        "axis_deg": 139.45071796372883
       },
-      "residual_cornea_M_D": 0.0,
-      "rotation_scenario_min_abs_C_D": 0.0,
-      "rotation_scenario_max_abs_C_D": 0.2178893568691455,
+      "residual_cornea_M_D": 0.004999999999999893,
+      "rotation_scenario_min_abs_C_D": 0.0006669715934347375,
+      "rotation_scenario_max_abs_C_D": 0.22223326053945638,
       "signed_label_axis_change_deg": 10.0
     },
     "tied_best_label_axes_deg": [
       10.0
     ],
     "continuous_optimum": {
-      "label_axis_deg": 10.0,
-      "predicted_on_eye_axis_deg": 180.0,
+      "label_axis_deg": 9.901443788350463,
+      "predicted_on_eye_axis_deg": 179.99449569003008,
       "residual_cornea": {
-        "S_D": 0.0,
-        "C_D": 0.0,
-        "axis_deg": null
+        "S_D": 0.005333485796717262,
+        "C_D": -0.0006669715934347375,
+        "axis_deg": 179.9944956900384
       },
       "residual_over_refraction_plane": {
-        "S_D": 0.0,
-        "C_D": 0.0,
-        "axis_deg": null
+        "S_D": 0.005333485796717262,
+        "C_D": -0.0006669715934347377,
+        "axis_deg": 179.9944956900384
       },
-      "residual_cornea_M_D": 0.0,
-      "rotation_scenario_min_abs_C_D": 0.0,
-      "rotation_scenario_max_abs_C_D": 0.2178893568691455,
-      "signed_label_axis_change_deg": 10.0
+      "residual_cornea_M_D": 0.004999999999999893,
+      "rotation_scenario_min_abs_C_D": 0.0006669715934347375,
+      "rotation_scenario_max_abs_C_D": 0.21794850006574845,
+      "signed_label_axis_change_deg": 9.901443788350463
     },
-    "axis_only_theoretical_lower_bound_abs_C_D": 0.0,
-    "baseline_only_optimal_label_axis_deg": 10.0,
-    "baseline_only_best_available": {
-      "label_axis_deg": 10.0,
-      "predicted_on_eye_axis_deg": 180.0,
-      "residual_cornea": {
-        "S_D": 0.0,
-        "C_D": 0.0,
-        "axis_deg": null
-      },
-      "residual_over_refraction_plane": {
-        "S_D": 0.0,
-        "C_D": 0.0,
-        "axis_deg": null
-      },
-      "residual_cornea_M_D": 0.0,
-      "rotation_scenario_min_abs_C_D": 0.0,
-      "rotation_scenario_max_abs_C_D": 0.2178893568691455,
-      "signed_label_axis_change_deg": 10.0
-    },
-    "baseline_predicted_residual_at_primary_best_cornea": {
-      "S_D": 0.0,
-      "C_D": 0.0,
-      "axis_deg": null
-    },
+    "axis_only_theoretical_lower_bound_abs_C_D": 0.000666971593434651,
     "all_candidates": [
       {
         "label_axis_deg": 10.0,
-        "predicted_on_eye_axis_deg": 180.0,
+        "predicted_on_eye_axis_deg": 0.09305190167961541,
         "residual_cornea": {
-          "S_D": 0.0,
-          "C_D": 0.0,
-          "axis_deg": null
+          "S_D": 0.007176436521154407,
+          "C_D": -0.004352873042309029,
+          "axis_deg": 139.45071796372883
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.0,
-          "C_D": 0.0,
-          "axis_deg": null
+          "S_D": 0.007176436521154407,
+          "C_D": -0.004352873042309029,
+          "axis_deg": 139.45071796372883
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 0.0,
-        "rotation_scenario_max_abs_C_D": 0.2178893568691455,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 0.0006669715934347375,
+        "rotation_scenario_max_abs_C_D": 0.22223326053945638,
         "signed_label_axis_change_deg": 10.0
       },
       {
         "label_axis_deg": 180.0,
-        "predicted_on_eye_axis_deg": 170.0,
+        "predicted_on_eye_axis_deg": 170.09305190167962,
         "residual_cornea": {
-          "S_D": 0.21706022208366285,
-          "C_D": -0.4341204441673257,
-          "axis_deg": 40.000000000000014
+          "S_D": 0.21999999999999986,
+          "C_D": -0.42999999999999994,
+          "axis_deg": 40.0
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.21706022208366285,
-          "C_D": -0.4341204441673257,
-          "axis_deg": 40.000000000000014
+          "S_D": 0.21999999999999986,
+          "C_D": -0.42999999999999994,
+          "axis_deg": 40.0
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 0.2178893568691455,
-        "rotation_scenario_max_abs_C_D": 0.6470476127563025,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 0.21366309551093798,
+        "rotation_scenario_max_abs_C_D": 0.6430647011435018,
         "signed_label_axis_change_deg": 0.0
       },
       {
         "label_axis_deg": 20.0,
-        "predicted_on_eye_axis_deg": 10.0,
+        "predicted_on_eye_axis_deg": 10.093051901679615,
         "residual_cornea": {
-          "S_D": 0.2170602220836629,
-          "C_D": -0.4341204441673258,
-          "axis_deg": 140.0
+          "S_D": 0.2242361169758493,
+          "C_D": -0.4384722339516988,
+          "axis_deg": 140.0866757537226
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.2170602220836629,
-          "C_D": -0.4341204441673258,
-          "axis_deg": 140.0
+          "S_D": 0.2242361169758493,
+          "C_D": -0.4384722339516988,
+          "axis_deg": 140.0866757537226
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 0.21788935686914543,
-        "rotation_scenario_max_abs_C_D": 0.6470476127563017,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 0.22223326053945638,
+        "rotation_scenario_max_abs_C_D": 0.6513745005576169,
         "signed_label_axis_change_deg": 20.0
       },
       {
         "label_axis_deg": 170.0,
-        "predicted_on_eye_axis_deg": 160.0,
+        "predicted_on_eye_axis_deg": 160.09305190167962,
         "residual_cornea": {
-          "S_D": 0.42752517915708615,
-          "C_D": -0.8550503583141723,
-          "axis_deg": 35.0
+          "S_D": 0.4306176905247947,
+          "C_D": -0.8512353810495896,
+          "axis_deg": 35.02266772762881
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.42752517915708615,
-          "C_D": -0.8550503583141723,
-          "axis_deg": 35.0
+          "S_D": 0.4306176905247947,
+          "C_D": -0.8512353810495896,
+          "axis_deg": 35.02266772762881
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 0.6470476127563025,
-        "rotation_scenario_max_abs_C_D": 1.0565456543517486,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 0.6430647011435018,
+        "rotation_scenario_max_abs_C_D": 1.0529276822383526,
         "signed_label_axis_change_deg": -10.0
       },
       {
         "label_axis_deg": 30.0,
-        "predicted_on_eye_axis_deg": 20.0,
+        "predicted_on_eye_axis_deg": 20.093051901679615,
         "residual_cornea": {
-          "S_D": 0.4275251791570859,
-          "C_D": -0.8550503583141718,
-          "axis_deg": 145.0
+          "S_D": 0.4346597498367832,
+          "C_D": -0.8593194996735666,
+          "axis_deg": 145.06465514393557
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.4275251791570859,
-          "C_D": -0.8550503583141718,
-          "axis_deg": 145.0
+          "S_D": 0.4346597498367832,
+          "C_D": -0.8593194996735666,
+          "axis_deg": 145.06465514393557
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 0.6470476127563017,
-        "rotation_scenario_max_abs_C_D": 1.0565456543517486,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 0.6513745005576169,
+        "rotation_scenario_max_abs_C_D": 1.0607245939804633,
         "signed_label_axis_change_deg": 30.0
       },
       {
         "label_axis_deg": 160.0,
-        "predicted_on_eye_axis_deg": 150.0,
+        "predicted_on_eye_axis_deg": 150.09305190167962,
         "residual_cornea": {
-          "S_D": 0.6249999999999999,
-          "C_D": -1.2499999999999998,
-          "axis_deg": 30.000000000000004
+          "S_D": 0.6283032934151714,
+          "C_D": -1.246606586830343,
+          "axis_deg": 30.030486651487625
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.6249999999999999,
-          "C_D": -1.2499999999999998,
-          "axis_deg": 30.000000000000004
+          "S_D": 0.6283032934151714,
+          "C_D": -1.246606586830343,
+          "axis_deg": 30.030486651487625
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 1.0565456543517486,
-        "rotation_scenario_max_abs_C_D": 1.4339410908776151,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 1.0529276822383526,
+        "rotation_scenario_max_abs_C_D": 1.4307980737836452,
         "signed_label_axis_change_deg": -20.0
       },
       {
         "label_axis_deg": 40.0,
-        "predicted_on_eye_axis_deg": 30.0,
+        "predicted_on_eye_axis_deg": 30.093051901679615,
         "residual_cornea": {
-          "S_D": 0.6249999999999999,
-          "C_D": -1.2499999999999998,
-          "axis_deg": 150.0
+          "S_D": 0.6320284760299203,
+          "C_D": -1.2540569520598408,
+          "axis_deg": 150.05695579254973
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.6249999999999999,
-          "C_D": -1.2499999999999998,
-          "axis_deg": 150.0
+          "S_D": 0.6320284760299203,
+          "C_D": -1.2540569520598408,
+          "axis_deg": 150.05695579254973
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 1.0565456543517486,
-        "rotation_scenario_max_abs_C_D": 1.4339410908776151,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 1.0607245939804633,
+        "rotation_scenario_max_abs_C_D": 1.43784519051978,
         "signed_label_axis_change_deg": 40.0
       },
       {
         "label_axis_deg": 150.0,
-        "predicted_on_eye_axis_deg": 140.0,
+        "predicted_on_eye_axis_deg": 140.09305190167962,
         "residual_cornea": {
-          "S_D": 0.8034845121081744,
-          "C_D": -1.6069690242163488,
-          "axis_deg": 24.999999999999993
+          "S_D": 0.8070501654066697,
+          "C_D": -1.6041003308133397,
+          "axis_deg": 25.03463585864327
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.8034845121081744,
-          "C_D": -1.6069690242163488,
-          "axis_deg": 24.999999999999993
+          "S_D": 0.8070501654066697,
+          "C_D": -1.6041003308133397,
+          "axis_deg": 25.03463585864327
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 1.4339410908776151,
-        "rotation_scenario_max_abs_C_D": 1.7677669529663689,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 1.4307980737836452,
+        "rotation_scenario_max_abs_C_D": 1.765194420939175,
         "signed_label_axis_change_deg": -30.0
       },
       {
         "label_axis_deg": 50.0,
-        "predicted_on_eye_axis_deg": 40.0,
+        "predicted_on_eye_axis_deg": 40.093051901679615,
         "residual_cornea": {
-          "S_D": 0.8034845121081741,
-          "C_D": -1.6069690242163481,
-          "axis_deg": 155.0
+          "S_D": 0.8103452830666246,
+          "C_D": -1.6106905661332493,
+          "axis_deg": 155.05284811174326
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.8034845121081741,
-          "C_D": -1.6069690242163481,
-          "axis_deg": 155.0
+          "S_D": 0.8103452830666246,
+          "C_D": -1.6106905661332493,
+          "axis_deg": 155.05284811174326
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 1.4339410908776151,
-        "rotation_scenario_max_abs_C_D": 1.7677669529663689,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 1.43784519051978,
+        "rotation_scenario_max_abs_C_D": 1.7712776191084778,
         "signed_label_axis_change_deg": 50.0
       },
       {
         "label_axis_deg": 140.0,
-        "predicted_on_eye_axis_deg": 130.0,
+        "predicted_on_eye_axis_deg": 130.09305190167962,
         "residual_cornea": {
-          "S_D": 0.9575555538987225,
-          "C_D": -1.915111107797445,
-          "axis_deg": 20.0
+          "S_D": 0.9614271597773062,
+          "C_D": -1.9128543195546126,
+          "axis_deg": 20.03733989569778
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.9575555538987225,
-          "C_D": -1.915111107797445,
-          "axis_deg": 20.0
+          "S_D": 0.9614271597773062,
+          "C_D": -1.9128543195546126,
+          "axis_deg": 20.03733989569778
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 1.7677669529663689,
-        "rotation_scenario_max_abs_C_D": 2.0478801107224793,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 1.765194420939175,
+        "rotation_scenario_max_abs_C_D": 2.045956244832358,
         "signed_label_axis_change_deg": -40.0
       },
       {
         "label_axis_deg": 60.0,
-        "predicted_on_eye_axis_deg": 50.0,
+        "predicted_on_eye_axis_deg": 50.093051901679615,
         "residual_cornea": {
-          "S_D": 0.9575555538987225,
-          "C_D": -1.915111107797445,
-          "axis_deg": 160.0
+          "S_D": 0.9641920918608954,
+          "C_D": -1.918384183721791,
+          "axis_deg": 160.05016290108222
         },
         "residual_over_refraction_plane": {
-          "S_D": 0.9575555538987225,
-          "C_D": -1.915111107797445,
-          "axis_deg": 160.0
+          "S_D": 0.9641920918608954,
+          "C_D": -1.918384183721791,
+          "axis_deg": 160.05016290108222
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 1.7677669529663689,
-        "rotation_scenario_max_abs_C_D": 2.0478801107224793,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 1.7712776191084778,
+        "rotation_scenario_max_abs_C_D": 2.050890689365573,
         "signed_label_axis_change_deg": 60.0
       },
       {
         "label_axis_deg": 130.0,
-        "predicted_on_eye_axis_deg": 120.0,
+        "predicted_on_eye_axis_deg": 120.09305190167962,
         "residual_cornea": {
-          "S_D": 1.0825317547305484,
-          "C_D": -2.165063509461097,
-          "axis_deg": 14.999999999999993
+          "S_D": 1.086743605095469,
+          "C_D": -2.1634872101909384,
+          "axis_deg": 15.03934478239659
         },
         "residual_over_refraction_plane": {
-          "S_D": 1.0825317547305484,
-          "C_D": -2.165063509461097,
-          "axis_deg": 14.999999999999993
+          "S_D": 1.086743605095469,
+          "C_D": -2.1634872101909384,
+          "axis_deg": 15.03934478239659
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 2.0478801107224793,
-        "rotation_scenario_max_abs_C_D": 2.265769467591625,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 2.045956244832358,
+        "rotation_scenario_max_abs_C_D": 2.2645527336307203,
         "signed_label_axis_change_deg": -50.0
       },
       {
         "label_axis_deg": 70.0,
-        "predicted_on_eye_axis_deg": 60.0,
+        "predicted_on_eye_axis_deg": 60.093051901679615,
         "residual_cornea": {
-          "S_D": 1.0825317547305482,
-          "C_D": -2.1650635094610964,
-          "axis_deg": 165.0
+          "S_D": 1.0888943404848772,
+          "C_D": -2.1677886809697546,
+          "axis_deg": 165.0481677603589
         },
         "residual_over_refraction_plane": {
-          "S_D": 1.0825317547305482,
-          "C_D": -2.1650635094610964,
-          "axis_deg": 165.0
+          "S_D": 1.0888943404848772,
+          "C_D": -2.1677886809697546,
+          "axis_deg": 165.0481677603589
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 2.0478801107224793,
-        "rotation_scenario_max_abs_C_D": 2.265769467591625,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 2.050890689365573,
+        "rotation_scenario_max_abs_C_D": 2.268188493852651,
         "signed_label_axis_change_deg": 70.0
       },
       {
         "label_axis_deg": 120.0,
-        "predicted_on_eye_axis_deg": 110.0,
+        "predicted_on_eye_axis_deg": 110.09305190167962,
         "residual_cornea": {
-          "S_D": 1.1746157759823854,
-          "C_D": -2.349231551964771,
-          "axis_deg": 10.0
+          "S_D": 1.1791918226114246,
+          "C_D": -2.3483836452228495,
+          "axis_deg": 10.040977844434304
         },
         "residual_over_refraction_plane": {
-          "S_D": 1.1746157759823854,
-          "C_D": -2.349231551964771,
-          "axis_deg": 10.0
+          "S_D": 1.1791918226114246,
+          "C_D": -2.3483836452228495,
+          "axis_deg": 10.040977844434304
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 2.265769467591625,
-        "rotation_scenario_max_abs_C_D": 2.4148145657226707,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 2.2645527336307203,
+        "rotation_scenario_max_abs_C_D": 2.414341940921522,
         "signed_label_axis_change_deg": -60.0
       },
       {
         "label_axis_deg": 80.0,
-        "predicted_on_eye_axis_deg": 70.0,
+        "predicted_on_eye_axis_deg": 70.09305190167962,
         "residual_cornea": {
-          "S_D": 1.1746157759823856,
-          "C_D": -2.3492315519647713,
-          "axis_deg": 170.0
+          "S_D": 1.1806630122742172,
+          "C_D": -2.3513260245484346,
+          "axis_deg": 170.0465399782619
         },
         "residual_over_refraction_plane": {
-          "S_D": 1.1746157759823856,
-          "C_D": -2.3492315519647713,
-          "axis_deg": 170.0
+          "S_D": 1.1806630122742172,
+          "C_D": -2.3513260245484346,
+          "axis_deg": 170.0465399782619
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 2.265769467591625,
-        "rotation_scenario_max_abs_C_D": 2.414814565722671,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 2.268188493852651,
+        "rotation_scenario_max_abs_C_D": 2.416568546061255,
         "signed_label_axis_change_deg": 80.0
       },
       {
         "label_axis_deg": 110.0,
-        "predicted_on_eye_axis_deg": 100.0,
+        "predicted_on_eye_axis_deg": 100.09305190167962,
         "residual_cornea": {
-          "S_D": 1.2310096912652602,
-          "C_D": -2.4620193825305203,
-          "axis_deg": 4.999999999999999
+          "S_D": 1.2359628190691618,
+          "C_D": -2.461925638138324,
+          "axis_deg": 5.042412944169595
         },
         "residual_over_refraction_plane": {
-          "S_D": 1.2310096912652602,
-          "C_D": -2.4620193825305203,
-          "axis_deg": 4.999999999999999
+          "S_D": 1.2359628190691618,
+          "C_D": -2.461925638138324,
+          "axis_deg": 5.042412944169595
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 2.4148145657226707,
-        "rotation_scenario_max_abs_C_D": 2.4904867452293638,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 2.414341940921522,
+        "rotation_scenario_max_abs_C_D": 2.4907725961194025,
         "signed_label_axis_change_deg": -70.0
       },
       {
         "label_axis_deg": 90.0,
-        "predicted_on_eye_axis_deg": 80.0,
+        "predicted_on_eye_axis_deg": 80.09305190167962,
         "residual_cornea": {
-          "S_D": 1.23100969126526,
-          "C_D": -2.46201938253052,
-          "axis_deg": 175.0
+          "S_D": 1.2367097616392209,
+          "C_D": -2.463419523278442,
+          "axis_deg": 175.04510754356247
         },
         "residual_over_refraction_plane": {
-          "S_D": 1.23100969126526,
-          "C_D": -2.46201938253052,
-          "axis_deg": 175.0
+          "S_D": 1.2367097616392209,
+          "C_D": -2.463419523278442,
+          "axis_deg": 175.04510754356247
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 2.414814565722671,
-        "rotation_scenario_max_abs_C_D": 2.4904867452293638,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 2.416568546061255,
+        "rotation_scenario_max_abs_C_D": 2.491522391889359,
         "signed_label_axis_change_deg": -90.0
       },
       {
         "label_axis_deg": 100.0,
-        "predicted_on_eye_axis_deg": 90.0,
+        "predicted_on_eye_axis_deg": 90.09305190167962,
         "residual_cornea": {
-          "S_D": 1.25,
-          "C_D": -2.5,
-          "axis_deg": 180.0
+          "S_D": 1.2553316360235853,
+          "C_D": -2.500663272047171,
+          "axis_deg": 0.043760652509667985
         },
         "residual_over_refraction_plane": {
-          "S_D": 1.25,
-          "C_D": -2.5,
-          "axis_deg": 180.0
+          "S_D": 1.2553316360235853,
+          "C_D": -2.500663272047171,
+          "axis_deg": 0.043760652509667985
         },
-        "residual_cornea_M_D": 0.0,
-        "rotation_scenario_min_abs_C_D": 2.4904867452293638,
-        "rotation_scenario_max_abs_C_D": 2.5,
+        "residual_cornea_M_D": 0.004999999999999893,
+        "rotation_scenario_min_abs_C_D": 2.4907725961194025,
+        "rotation_scenario_max_abs_C_D": 2.5006669715934344,
         "signed_label_axis_change_deg": -80.0
       }
     ],
     "warnings": [
+      "回転の実測値は使用していません。装用前と装用後の屈折値から眼上軸を推定し、次レンズでも同じ回転が生じると仮定した参考計算です。屈折状態が変わらず、レンズの効果を同一角膜面の薄レンズとして表せることを仮定します。この推定方式は臨床未検証で、実測した回転量の代用を保証するものではありません。",
       "他覚的屈折値を使用しています。装用下の自覚的追加矯正と視力を確認してください。"
     ]
   },
-  "sensitivity_scope": "Next rotation only. The inferred target is fixed; this is NOT a statistical confidence interval and does NOT propagate current-rotation or refraction measurement error.",
+  "sensitivity_scope": "Next-rotation scenarios only; excludes estimation/refraction error. NOT a confidence interval.",
   "references": [
     {
       "title": "Thibos LN, Wheeler W, Horner D. Power vectors. Optom Vis Sci. 1997;74(6):367–375.",
@@ -501,5 +476,29 @@
       "title": "CooperVision Australia. Toric Fitting Guidelines (LARS/CAAS).",
       "url": "https://coopervision.net.au/practitioner/fitting-tips-and-tools/toolkits/biofinity/toric-fitting-guidelines"
     }
-  ]
+  ],
+  "rotation_estimation": {
+    "source": "inferred_from_baseline_minus_over_refraction_NOT_observed",
+    "clockwise_deg": 9.906948098320385,
+    "on_eye_axis_deg": 170.09305190167962,
+    "implied_lens_cornea": {
+      "S_D": -3.0053544587111722,
+      "C_D": -1.2492910825776553,
+      "axis_deg": 170.09305190167962
+    },
+    "nominal_lens_fitted_to_inferred_axis": {
+      "S_D": -3.0,
+      "C_D": -1.25,
+      "axis_deg": 170.09305190167962
+    },
+    "nominal_minus_implied_M_D": 0.004999999999999893,
+    "nominal_minus_implied_abs_C_D": 0.0007089174223446904,
+    "note": "回転の実測値は使用していません。装用前と装用後の屈折値から眼上軸を推定し、次レンズでも同じ回転が生じると仮定した参考計算です。屈折状態が変わらず、レンズの効果を同一角膜面の薄レンズとして表せることを仮定します。この推定方式は臨床未検証で、実測した回転量の代用を保証するものではありません。"
+  },
+  "assumptions": {
+    "rotation_was_measured": false,
+    "next_rotation_equals_estimated_current_rotation": true,
+    "estimated_next_rotation_cw_deg": 9.906948098320385,
+    "baseline_used_in_estimation_not_independent_validation": true
+  }
 }

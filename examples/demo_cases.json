@@ -1,173 +1,44 @@
 [
   {
-    "name": "synthetic_CW_+10_degrees",
-    "input": {
-      "eye": "OD",
-      "source": "架空デモ",
-      "rotation_stability": "安定している",
-      "over_refraction_measurement_type": "他覚的屈折（SCL装用下）",
-      "baseline": {
-        "S_D": -3.0,
-        "C_D": -1.25,
-        "axis_deg": 180.0
-      },
-      "baseline_vertex_mm": 0,
-      "current_SCL": {
-        "S_D": -3.0,
-        "C_D": -1.25,
-        "axis_deg": 180.0
-      },
-      "current_rotation_cw_deg": 10.0,
-      "over_refraction": {
-        "S_D": 0.21706022208366285,
-        "C_D": -0.4341204441673257,
-        "axis_deg": 40.000000000000014
-      },
-      "over_refraction_vertex_mm": 0,
-      "next_SCL_S_C_fixed": {
-        "S_D": -3.0,
-        "C_D": -1.25
-      },
-      "assumed_next_rotation_cw_deg": 10.0,
-      "candidate_axes_deg": [
-        10.0,
-        20.0,
-        30.0,
-        40.0,
-        50.0,
-        60.0,
-        70.0,
-        80.0,
-        90.0,
-        100.0,
-        110.0,
-        120.0,
-        130.0,
-        140.0,
-        150.0,
-        160.0,
-        170.0,
-        180.0
-      ],
-      "next_rotation_scenario_half_width_deg": 5.0,
-      "discrepancy_check_threshold_D_unvalidated": 0.5
+    "name": "demo1",
+    "baseline": {
+      "S_D": -3.0,
+      "C_D": -1.25,
+      "axis_deg": 180.0
     },
-    "expected_label_axis_deg": 10.0,
-    "expected_residual_abs_C_D": 0.0,
-    "purpose": "Synthetic mathematical check, not patient data"
+    "lens": {
+      "S_D": -3.0,
+      "C_D": -1.25,
+      "axis_deg": 180.0
+    },
+    "over": {
+      "S_D": 0.22,
+      "C_D": -0.43,
+      "axis_deg": 40.0
+    },
+    "baseline_VD_mm": 0,
+    "over_VD_mm": 0,
+    "expected_axis_deg": 10
   },
   {
-    "name": "synthetic_CW_-10_degrees",
-    "input": {
-      "eye": "OD",
-      "source": "架空デモ",
-      "rotation_stability": "安定している",
-      "over_refraction_measurement_type": "他覚的屈折（SCL装用下）",
-      "baseline": {
-        "S_D": -3.0,
-        "C_D": -1.25,
-        "axis_deg": 180.0
-      },
-      "baseline_vertex_mm": 0,
-      "current_SCL": {
-        "S_D": -3.0,
-        "C_D": -1.25,
-        "axis_deg": 180.0
-      },
-      "current_rotation_cw_deg": -10.0,
-      "over_refraction": {
-        "S_D": 0.2170602220836629,
-        "C_D": -0.4341204441673258,
-        "axis_deg": 140.0
-      },
-      "over_refraction_vertex_mm": 0,
-      "next_SCL_S_C_fixed": {
-        "S_D": -3.0,
-        "C_D": -1.25
-      },
-      "assumed_next_rotation_cw_deg": -10.0,
-      "candidate_axes_deg": [
-        10.0,
-        20.0,
-        30.0,
-        40.0,
-        50.0,
-        60.0,
-        70.0,
-        80.0,
-        90.0,
-        100.0,
-        110.0,
-        120.0,
-        130.0,
-        140.0,
-        150.0,
-        160.0,
-        170.0,
-        180.0
-      ],
-      "next_rotation_scenario_half_width_deg": 5.0,
-      "discrepancy_check_threshold_D_unvalidated": 0.5
+    "name": "demo2",
+    "baseline": {
+      "S_D": -3.0,
+      "C_D": -1.25,
+      "axis_deg": 180.0
     },
-    "expected_label_axis_deg": 170.0,
-    "expected_residual_abs_C_D": 0.0,
-    "purpose": "Synthetic mathematical check, not patient data"
-  },
-  {
-    "name": "synthetic_CW_+0_degrees",
-    "input": {
-      "eye": "OD",
-      "source": "架空デモ",
-      "rotation_stability": "安定している",
-      "over_refraction_measurement_type": "他覚的屈折（SCL装用下）",
-      "baseline": {
-        "S_D": -3.0,
-        "C_D": -1.25,
-        "axis_deg": 180.0
-      },
-      "baseline_vertex_mm": 0,
-      "current_SCL": {
-        "S_D": -3.0,
-        "C_D": -1.25,
-        "axis_deg": 180.0
-      },
-      "current_rotation_cw_deg": 0.0,
-      "over_refraction": {
-        "S_D": 0.0,
-        "C_D": 0.0,
-        "axis_deg": null
-      },
-      "over_refraction_vertex_mm": 0,
-      "next_SCL_S_C_fixed": {
-        "S_D": -3.0,
-        "C_D": -1.25
-      },
-      "assumed_next_rotation_cw_deg": 0.0,
-      "candidate_axes_deg": [
-        10.0,
-        20.0,
-        30.0,
-        40.0,
-        50.0,
-        60.0,
-        70.0,
-        80.0,
-        90.0,
-        100.0,
-        110.0,
-        120.0,
-        130.0,
-        140.0,
-        150.0,
-        160.0,
-        170.0,
-        180.0
-      ],
-      "next_rotation_scenario_half_width_deg": 5.0,
-      "discrepancy_check_threshold_D_unvalidated": 0.5
+    "lens": {
+      "S_D": -3.0,
+      "C_D": -1.25,
+      "axis_deg": 180.0
     },
-    "expected_label_axis_deg": 180.0,
-    "expected_residual_abs_C_D": 0.0,
-    "purpose": "Synthetic mathematical check, not patient data"
+    "over": {
+      "S_D": 0.22,
+      "C_D": -0.43,
+      "axis_deg": 140.0
+    },
+    "baseline_VD_mm": 0,
+    "over_VD_mm": 0,
+    "expected_axis_deg": 170
   }
 ]
