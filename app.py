@@ -1,10 +1,11 @@
-"""Toric SCL Axis Planner 0.2.0.
+"""Toric SCL Axis Planner 0.3.0.
 
 Run: python -m streamlit run app.py
-UI update: no rotation entry; editable selection lists at requested increments.
+UI update: zero-first lists, unrestricted-step direct entry, renumbered sections, no demos.
 Rotation is ESTIMATED from baseline minus over-refraction, never assumed zero.
 Clinical validity of this inverse model has NOT been established.
-Only this file must replace app.py in an existing 0.1.0 installation.
+Update app.py and engine.py together in an existing installation.
+engine.py additionally permits a 0 D discrepancy-alert threshold; optics are unchanged.
 """
 from __future__ import annotations
 
@@ -25,8 +26,8 @@ from engine import (
 )
 from visuals import curve_figure, axis_figure
 
-VERSION = "0.2.0"
-SCHEMA_VERSION = "2.0"
+VERSION = "0.3.0"
+SCHEMA_VERSION = "3.0"
 # A conservative numerical guard, NOT a validated clinical cutoff.
 MIN_INFERENCE_C = 0.05
 INFERENCE_NOTE = (
@@ -36,7 +37,7 @@ INFERENCE_NOTE = (
     "この推定方式は臨床未検証で、実測した回転量の代用を保証するものではありません。"
 )
 GRID_OPTIONS = ["10°刻み（仮の候補）", "5°刻み（仮の候補）", "1°刻み（理論比較）", "使用可能な軸を選択・入力"]
-INPUT_STEPS = {"baseline": ("0.25", "5"), "lens": ("0.25", "10"), "over": ("0.01", "1")}
+INPUT_STEPS = {"baseline": ("0.25", "5"), "lens": ("0.25", "10"), "over": ("0.25", "5")}
 STATE_DEFAULTS = {
     "eye": "右眼 OD",
     "baseline_s": None, "baseline_c": None, "baseline_a": None,
@@ -86,7 +87,7 @@ def estimate_rotation(baseline: Rx, lens: Rx, over: Rx, baseline_vd: float, over
     implied_p = to_vector(to_cornea(baseline, baseline_vd)) - to_vector(to_cornea(over, over_vd))
     if implied_p.cylinder_magnitude < MIN_INFERENCE_C:
         raise ValueError(
-            "01と04の差から得られる乱視補正成分が小さく、眼上軸を推定できません。"
+            "01と03の差から得られる乱視補正成分が小さく、眼上軸を推定できません。"
             "入力値・測定面を再確認してください。回転を0°に置き換えた計算は行いません。"
             f"（推定を保留する便宜的な閾値：{MIN_INFERENCE_C:.2f} D未満）"
         )
@@ -98,8 +99,12 @@ def estimate_rotation(baseline: Rx, lens: Rx, over: Rx, baseline_vd: float, over
 
 
 def parse_value(raw: object, *, label: str, minimum: float, maximum: float,
-                step: str, axis: bool = False) -> float | None:
-    """Normalize full-width numbers/signs and validate WITHOUT silently rounding."""
+                step: str | None = None, axis: bool = False) -> float | None:
+    """Parse finite in-range numbers without enforcing dropdown increments.
+
+    ``step`` is retained for call compatibility only: it describes list options,
+    not restrictions on a manually entered value. No grid quantization occurs.
+    """
     if raw is None or str(raw).strip() == "":
         return None
     s = unicodedata.normalize("NFKC", str(raw)).strip()
@@ -116,17 +121,27 @@ def parse_value(raw: object, *, label: str, minimum: float, maximum: float,
         raise ValueError(f"{label}には有限の数値を入力してください。")
     if not Decimal(str(minimum)) <= d <= Decimal(str(maximum)):
         raise ValueError(f"{label}は{minimum:g}〜{maximum:g}の範囲で入力してください。")
-    if d % Decimal(step) != 0:
-        unit = "°" if axis else (" mm" if "距離" in label else " D")
-        raise ValueError(f"{label}は{step}{unit}刻みで選択・入力してください。入力値は自動では丸めません。")
     return 180.0 if axis and d == 0 else float(d)
 
 
 @lru_cache(maxsize=32)
 def options_for(minimum: str, maximum: str, step: str, decimals: int) -> tuple[str, ...]:
-    """Decimal enumeration avoids accumulated float rounding in 0.01 D lists."""
+    """Exact dropdown grid: 0, negatives towards the minimum, then positives.
+
+    For nonnegative lists (e.g. axes and VD), this is 0, step, 2*step, ... .
+    This ordering changes the UI only and never changes calculation values.
+    """
     lo, hi, q = Decimal(minimum), Decimal(maximum), Decimal(step)
-    return tuple(f"{lo+i*q:.{decimals}f}" for i in range(int((hi-lo)/q)+1))
+    if not all(x.is_finite() for x in (lo, hi, q)) or q <= 0 or lo > hi:
+        raise ValueError("選択肢の範囲・刻みが不正です。")
+    if not 0 <= decimals <= 10:
+        raise ValueError("選択肢の小数桁数が不正です。")
+    values = [lo + i*q for i in range(int((hi-lo)/q)+1)]
+    if lo <= 0 <= hi:
+        values = [Decimal(0),
+                  *sorted((v for v in values if v < 0), reverse=True),
+                  *sorted(v for v in values if v > 0)]
+    return tuple(f"{v:.{decimals}f}" for v in values)
 
 
 def numeric_choice(label: str, key: str, minimum: str, maximum: str, step: str,
@@ -148,25 +163,11 @@ def init_state() -> None:
 def clear_inputs() -> None:
     for key in ("rotation_direction", "rotation_amount", "stability", "change_rotation",
                 "next_rotation_direction", "next_rotation_amount", "axes_text",
-                "_result", "_estimate", "_result_signature"):
+                "_result", "_estimate", "_result_signature", "_demo"):
         st.session_state.pop(key, None)
     for key, value in STATE_DEFAULTS.items():
         st.session_state[key] = list(value) if isinstance(value, list) else value
-    st.session_state["_demo"] = False
     st.session_state["_schema"] = SCHEMA_VERSION
-
-
-def load_demo(rotation: float) -> None:
-    clear_inputs()
-    target = Rx(-3.0, -1.25, 180.0)
-    over = from_vector(to_vector(target) - to_vector(lens_on_eye(target, rotation)))
-    st.session_state.update({
-        "baseline_s": "-3.00", "baseline_c": "-1.25", "baseline_a": "180",
-        "baseline_vertex": "0.0", "lens_s": "-3.00", "lens_c": "-1.25", "lens_a": "180",
-        "over_s": f"{over.sphere:.2f}", "over_c": f"{over.cylinder:.2f}",
-        "over_a": None if over.axis is None else str(int(round(display_axis(over.axis))) or 180),
-        "over_vertex": "0.0", "_demo": True,
-    })
 
 
 def input_signature() -> str:
@@ -176,7 +177,6 @@ def input_signature() -> str:
         data.pop("next_c", None)
     if data["grid_mode"] != GRID_OPTIONS[3]:
         data.pop("available_axes", None)
-    data["_demo"] = st.session_state["_demo"]
     return json.dumps(data, ensure_ascii=False, sort_keys=True, allow_nan=False)
 
 
@@ -188,9 +188,9 @@ def rx_inputs(prefix: str) -> None:
     with c2:
         numeric_choice("C / CYL（D）", f"{prefix}_c", "-15", "0" if prefix == "lens" else "15", power_step)
     with c3:
-        numeric_choice("Ax（°）", f"{prefix}_a", axis_step, "180", axis_step, 0,
-                       "0°を直接入力した場合は180°と同じ軸として扱います。")
-    st.caption(f"S・C：{power_step} D刻み ／ Ax：{axis_step}°刻み。リスト選択・直接入力の両方に対応します。")
+        numeric_choice("Ax（°）", f"{prefix}_a", "0", "180", axis_step, 0,
+                       "リストは0°から始まります。0°と180°は同じ軸です。直接入力は刻みに関係なく、小数の軸も入力できます。")
+    st.caption(f"リスト：S・C {power_step} D刻み ／ Ax {axis_step}°刻み。直接入力は範囲内の任意の値を使えます（刻み制限・自動丸めなし）。")
     if prefix == "lens":
         st.caption("容器・処方に記載されたSCLの表示度数です。マイナス円柱表記で入力してください。")
     else:
@@ -221,7 +221,7 @@ def required_value(key: str, label: str, minimum: float, maximum: float, step: s
 
 def build_case() -> tuple[Case, RotationEstimate]:
     baseline, lens, over = (read_rx(p, label) for p, label in
-                            (("baseline", "01 装用前"), ("lens", "02 SCL"), ("over", "04 装用後")))
+                            (("baseline", "01 装用前"), ("lens", "02 SCL"), ("over", "03 装用後")))
     bvd = required_value("baseline_vertex", "装用前の頂点間距離", 0, 25, "0.5")
     ovd = required_value("over_vertex", "装用後の頂点間距離", 0, 25, "0.5")
     estimate = estimate_rotation(baseline, lens, over, bvd, ovd)
@@ -242,8 +242,8 @@ def build_case() -> tuple[Case, RotationEstimate]:
         rotation_half_width_deg=required_value("rotation_half_width", "変動幅", 0, 30, "1"),
         eye="OD" if st.session_state["eye"] == "右眼 OD" else "OS",
         stability="未確認（屈折値からの推定）", measurement=st.session_state["measurement"],
-        source="架空デモ（編集値を含む）" if st.session_state["_demo"] else "選択・直接入力",
-        discrepancy_threshold_D=required_value("discrepancy_threshold", "不一致確認閾値", .05, 5, "0.05"),
+        source="選択・直接入力",
+        discrepancy_threshold_D=required_value("discrepancy_threshold", "不一致確認閾値", 0, 5, "0.05"),
     )
     return case, estimate
 
@@ -255,7 +255,7 @@ def analyze_case(case: Case) -> Analysis:
         if warning.startswith("回転の安定"):
             continue  # Replaced by a prominent inference disclosure in the UI/exports.
         if warning.startswith("装用前の矯正値と装用後"):
-            warning = ("入力したSCLのS/Cと、01−04から求めたレンズ効果が設定閾値を超えて一致しません。"
+            warning = ("入力したSCLのS/Cと、01−03から求めたレンズ効果が設定閾値を超えて一致しません。"
                        "回転だけでは入力値を説明できないため、この結果で処方を決定しないでください。"
                        "測定値・頂点間距離・屈折状態を再確認してください。")
         warnings.append(warning)
@@ -291,7 +291,7 @@ def summary_export(result: Analysis, estimate: RotationEstimate) -> str:
     c = result.case
     lines = [f"トーリックSCL 軸選択 v{VERSION}", "回転未測定・屈折値からの推定モデル", INFERENCE_NOTE,
              f"対象眼：{c.eye} / {c.source}", f"01 装用前：{fmt_rx(c.baseline)} / VD {c.baseline_vertex_mm:g} mm",
-             f"02 SCL表示度数：{fmt_rx(c.lens)}", f"04 装用後：{fmt_rx(c.over_refraction)} / VD {c.over_vertex_mm:g} mm",
+             f"02 SCL表示度数：{fmt_rx(c.lens)}", f"03 装用後：{fmt_rx(c.over_refraction)} / VD {c.over_vertex_mm:g} mm",
              f"眼上軸の推定：{fmt_axis(estimate.on_eye_axis_deg)}",
              f"回転の推定（実測ではない、時計回り正）：{estimate.clockwise_deg:+.2f}°",
              f"次レンズ固定度数：S {c.next_lens.sphere:+.2f} D / C {c.next_lens.cylinder:+.2f} D",
@@ -359,8 +359,8 @@ def show_results(result: Analysis, estimate: RotationEstimate) -> None:
         st.write(f"現在の推定眼上軸：**{fmt_axis(estimate.on_eye_axis_deg)}** ／ 回転の推定値：{estimate.clockwise_deg:+.2f}°（検者正面・時計回り正、実測ではありません）")
         st.dataframe(pd.DataFrame([
             {"項目": "01 装用前（角膜面）", "S/C/Axis": fmt_rx(result.baseline_cornea)},
-            {"項目": "04 装用後（角膜面）", "S/C/Axis": fmt_rx(result.over_cornea)},
-            {"項目": "01−04から得られるレンズ効果", "S/C/Axis": fmt_rx(estimate.implied_lens)},
+            {"項目": "03 装用後（角膜面）", "S/C/Axis": fmt_rx(result.over_cornea)},
+            {"項目": "01−03から得られるレンズ効果", "S/C/Axis": fmt_rx(estimate.implied_lens)},
             {"項目": "02のS/Cを推定眼上軸に配置", "S/C/Axis": fmt_rx(result.current_actual)},
             {"項目": "計算に使用する必要矯正の推定", "S/C/Axis": fmt_rx(result.inferred_target)},
         ]), hide_index=True, use_container_width=True)
@@ -375,7 +375,7 @@ def show_results(result: Analysis, estimate: RotationEstimate) -> None:
         st.latex(r"M=S+C/2,\quad J_0=-(C/2)\cos(2A),\quad J_{45}=-(C/2)\sin(2A)")
         st.latex(r"\mathbf L_{implied}=\mathbf B_{cornea}-\mathbf R_{cornea}")
         st.latex(r"A_{eye}=\tfrac12\operatorname{atan2}(J_{45,L},J_{0,L}),\quad r=A_{label}-A_{eye}\pmod{180^\circ}")
-        st.write("この方向に02のS/Cを配置した推定レンズ効果と04を加えて必要矯正を再構成し、各候補レンズの効果を差し引きます。01をさらに加算することはありません。")
+        st.write("この方向に02のS/Cを配置した推定レンズ効果と03を加えて必要矯正を再構成し、各候補レンズの効果を差し引きます。01をさらに加算することはありません。")
         st.latex(r"\mathbf T=\mathbf L_{nominal}(A_{eye})+\mathbf R_{cornea},\quad \mathbf P_{res}(a)=\mathbf T-\mathbf L_{next}(a-r)")
         st.caption("屈折値から回転を推定する逆計算は本アプリ独自のモデルで、下記資料がその臨床的妥当性を保証するものではありません。")
         a, b, d = st.columns(3)
@@ -401,29 +401,26 @@ def main() -> None:
     st.title("トーリックSCL 軸選択シミュレーター")
     st.write("装用前・SCL度数・装用後の屈折値から、次に試す **表示軸** を比較します。回転の入力は不要です。")
     st.warning("教育・研究用／臨床未検証です。回転は屈折値からの推定であり、結果だけで処方を確定しないでください。")
-    st.caption("各数値欄はリストから選択するか、数値を直接入力してEnterで確定できます。指定刻み以外の値は自動丸めせず、計算時に確認を表示します。")
-    b1, b2, b3, b4 = st.columns([1.1, 1.1, .8, 1])
-    b1.button("デモ1を入力", on_click=load_demo, args=(10.0,), use_container_width=True)
-    b2.button("デモ2を入力", on_click=load_demo, args=(-10.0,), use_container_width=True)
-    b3.button("入力をクリア", on_click=clear_inputs, use_container_width=True)
-    with b4:
-        st.selectbox("対象眼", ["右眼 OD", "左眼 OS"], key="eye", label_visibility="collapsed")
-    if st.session_state["_demo"]:
-        st.info("架空デモ（編集値を含む）。VD=0 mmで、04は0.01 D・1°単位に丸めて入力しています。デモ1の候補軸は10°、デモ2は170°です。")
+    st.caption("数値リストは0から始まります。数値を直接入力してEnterで確定することもできます。直接入力は刻みに関係なく、範囲内の任意の数値に対応します。")
+    controls, eye_column = st.columns([3, 1])
+    with controls:
+        st.button("入力をクリア", on_click=clear_inputs)
+    with eye_column:
+        st.selectbox("対象眼", ["右眼 OD", "左眼 OS"], key="eye")
     left, right = st.columns(2)
     with left:
         with st.container(border=True):
             st.subheader("01｜装用前の矯正値")
             rx_inputs("baseline")
             numeric_choice("装用前屈折値の頂点間距離（mm）", "baseline_vertex", "0", "25", "0.5", 1)
-            st.caption("角膜面換算済みなら0 mm。01と04の差から眼上軸を推定します。")
+            st.caption("角膜面換算済みなら0 mm。01と03の差から眼上軸を推定します。")
     with right:
         with st.container(border=True):
             st.subheader("02｜装用中SCLの表示度数")
             rx_inputs("lens")
             st.caption("初期設定は同じS・Cを維持した軸変更です。次レンズも同じ回転挙動を示すと仮定します。")
     with st.container(border=True):
-        st.subheader("04｜装用後の屈折値")
+        st.subheader("03｜装用後の屈折値")
         rx_inputs("over")
         x, y = st.columns(2)
         with x:
@@ -432,10 +429,10 @@ def main() -> None:
             numeric_choice("装用後屈折値の頂点間距離（mm）", "over_vertex", "0", "25", "0.5", 1)
         st.caption("SCL装用下の残余屈折／追加矯正を入力します。裸眼時やSCL度数を合算済みの値は入力しません。")
     with st.container(border=True):
-        st.subheader("05｜次に試せる軸の候補")
+        st.subheader("04｜次に試せる軸の候補")
         st.selectbox("候補軸の指定方法", GRID_OPTIONS, key="grid_mode")
         if st.session_state["grid_mode"] == GRID_OPTIONS[3]:
-            st.multiselect("使用可能な表示軸（°）", options_for("1", "180", "1", 0),
+            st.multiselect("使用可能な表示軸（°）", options_for("0", "180", "1", 0),
                            key="available_axes", accept_new_options=True,
                            placeholder="候補を選択、または軸を入力してEnter")
         st.caption("候補は製品規格・在庫を保証するものではありません。実際に使用できる表示軸を設定してください。")
@@ -449,10 +446,11 @@ def main() -> None:
                 numeric_choice("次レンズ C（D・マイナス円柱）", "next_c", "-15", "0", "0.25")
         numeric_choice("次レンズの回転変動シナリオ（±°）", "rotation_half_width", "0", "30", "1", 0)
         st.caption("実測回転の入力ではなく、予測回転が変わった場合の仮想比較です。±5°は信頼区間ではありません。")
-        numeric_choice("モデル不一致の確認閾値（D・便宜的）", "discrepancy_threshold", "0.05", "5", "0.05")
+        numeric_choice("モデル不一致の確認閾値（D・便宜的）", "discrepancy_threshold", "0", "5", "0.05",
+                       help_text="0 Dを選ぶと、ごく小さい不一致でも注意を表示します。計算結果を変更する設定ではありません。")
     st.checkbox("測定面を確認し、回転は推定値で結果は処方確定値ではないことを理解した", key="consent")
     if st.button("残余乱視が最小になる軸を計算", type="primary", use_container_width=True):
-        for key in ("_result", "_estimate", "_result_signature"):
+        for key in ("_result", "_estimate", "_result_signature", "_demo"):
             st.session_state.pop(key, None)
         if not st.session_state["consent"]:
             st.error("上の確認欄にチェックしてから計算してください。")
@@ -471,7 +469,7 @@ def main() -> None:
             show_results(st.session_state["_result"], st.session_state["_estimate"])
     with st.expander("適用範囲・計算の仮定・データの扱い"):
         st.write(INFERENCE_NOTE)
-        st.write("01と04の差が十分に得られず眼上軸を推定できない場合は、計算を保留します。SCLの変形・偏心・涙液・不正乱視・高次収差・調節変化などはモデル化していません。")
+        st.write("01と03の差が十分に得られず眼上軸を推定できない場合は、計算を保留します。SCLの変形・偏心・涙液・不正乱視・高次収差・調節変化などはモデル化していません。")
         st.write("入力はStreamlitサーバーで処理されます。本コードはDB保存・外部API送信・患者名やIDの収集を行いません。実データの扱いは施設の情報管理方針に従ってください。")
         for ref in REFERENCES:
             st.markdown(f"[{ref['title']}]({ref['url']})")

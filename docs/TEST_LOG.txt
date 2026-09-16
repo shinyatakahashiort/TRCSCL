@@ -1,12 +1,17 @@
-test_axis_step_enforced (test_app_model.InputSpecificationTests.test_axis_step_enforced) ... ok
+test_all_auxiliary_numeric_lists_start_at_zero (test_app_model.InputSpecificationTests.test_all_auxiliary_numeric_lists_start_at_zero) ... ok
+test_arbitrary_precision_entry_not_quantized (test_app_model.InputSpecificationTests.test_arbitrary_precision_entry_not_quantized) ... ok
+test_axis_step_not_enforced_for_direct_entry (test_app_model.InputSpecificationTests.test_axis_step_not_enforced_for_direct_entry) ... ok
 test_axis_zero_and_degree_suffix (test_app_model.InputSpecificationTests.test_axis_zero_and_degree_suffix) ... ok
+test_demo_function_and_labels_removed (test_app_model.InputSpecificationTests.test_demo_function_and_labels_removed) ... ok
 test_direct_entry_normalized (test_app_model.InputSpecificationTests.test_direct_entry_normalized) ... ok
 test_empty_values (test_app_model.InputSpecificationTests.test_empty_values) ... ok
 test_hundredth_entry (test_app_model.InputSpecificationTests.test_hundredth_entry) ... ok
-test_invalid_fine_precision (test_app_model.InputSpecificationTests.test_invalid_fine_precision) ... ok
+test_invalid_option_definitions_rejected (test_app_model.InputSpecificationTests.test_invalid_option_definitions_rejected) ... ok
 test_invalid_values_not_silently_rounded (test_app_model.InputSpecificationTests.test_invalid_values_not_silently_rounded) ... ok
 test_lists_have_exact_steps_and_endpoints (test_app_model.InputSpecificationTests.test_lists_have_exact_steps_and_endpoints) ... ok
 test_no_rotation_input_widget_in_source (test_app_model.InputSpecificationTests.test_no_rotation_input_widget_in_source) ... ok
+test_numbering_updated_everywhere (test_app_model.InputSpecificationTests.test_numbering_updated_everywhere) ... ok
+test_out_of_range_axes_still_rejected (test_app_model.InputSpecificationTests.test_out_of_range_axes_still_rejected) ... ok
 test_requested_power_steps (test_app_model.InputSpecificationTests.test_requested_power_steps) ... ok
 test_1000_random_rotations (test_app_model.InverseModelTests.test_1000_random_rotations) ... ok
 test_cannot_use_spherical_or_positive_current_lens (test_app_model.InverseModelTests.test_cannot_use_spherical_or_positive_current_lens) ... ok
@@ -19,16 +24,21 @@ test_nonzero_vertex_planes (test_app_model.InverseModelTests.test_nonzero_vertex
 test_plus_cylinder_baseline_and_over (test_app_model.InverseModelTests.test_plus_cylinder_baseline_and_over) ... ok
 test_zero_residual_preserves_current_axis (test_app_model.InverseModelTests.test_zero_residual_preserves_current_axis) ... ok
 test_zero_signal_does_not_assume_zero_rotation (test_app_model.InverseModelTests.test_zero_signal_does_not_assume_zero_rotation) ... ok
+test_arbitrary_auxiliary_values (test_app_model.StateTests.test_arbitrary_auxiliary_values) ... ok
+test_arbitrary_baseline_step_accepted (test_app_model.StateTests.test_arbitrary_baseline_step_accepted) ... ok
+test_arbitrary_values_in_all_nine_rx_fields (test_app_model.StateTests.test_arbitrary_values_in_all_nine_rx_fields) ... ok
+test_arbitrary_values_preserve_reference_calculation (test_app_model.StateTests.test_arbitrary_values_preserve_reference_calculation) ... ok
 test_blank_over_axis_allowed_when_c_zero (test_app_model.StateTests.test_blank_over_axis_allowed_when_c_zero) ... ok
 test_clear_removes_results_and_rotation_keys (test_app_model.StateTests.test_clear_removes_results_and_rotation_keys) ... ok
 test_custom_axes (test_app_model.StateTests.test_custom_axes) ... ok
 test_custom_power (test_app_model.StateTests.test_custom_power) ... ok
 test_empty_custom_axes_rejected (test_app_model.StateTests.test_empty_custom_axes_rejected) ... ok
 test_empty_inputs_rejected (test_app_model.StateTests.test_empty_inputs_rejected) ... ok
-test_invalid_baseline_step_rejected (test_app_model.StateTests.test_invalid_baseline_step_rejected) ... ok
+test_export_uses_new_numbering_and_preserves_input_precision (test_app_model.StateTests.test_export_uses_new_numbering_and_preserves_input_precision) ... ok
+test_old_demo_state_removed_by_schema_migration (test_app_model.StateTests.test_old_demo_state_removed_by_schema_migration) ... ok
 test_old_rotation_input_ignored (test_app_model.StateTests.test_old_rotation_input_ignored) ... ok
-test_rounded_demos_use_displayed_values_only (test_app_model.StateTests.test_rounded_demos_use_displayed_values_only) ... ok
 test_signature_changes_on_input (test_app_model.StateTests.test_signature_changes_on_input) ... ok
+test_zero_threshold_is_valid (test_app_model.StateTests.test_zero_threshold_is_valid) ... ok
 test_available_axis_constraint (test_engine.TestEngine.test_available_axis_constraint) ... ok
 test_axis_change_does_not_change_mean_power (test_engine.TestEngine.test_axis_change_does_not_change_mean_power) ... ok
 test_baseline_is_not_added_to_primary_target (test_engine.TestEngine.test_baseline_is_not_added_to_primary_target) ... ok
@@ -81,27 +91,27 @@ test_vertex_round_trip (test_optics.TestOptics.test_vertex_round_trip) ... ok
 test_zero_and_180_are_identical (test_optics.TestOptics.test_zero_and_180_are_identical) ... ok
 test_zero_rotation_range_width (test_optics.TestOptics.test_zero_rotation_range_width) ... ok
 test_zero_vertex_preserves_power (test_optics.TestOptics.test_zero_vertex_preserves_power) ... ok
-test_all_nine_rx_fields_are_editable_selections (test_ui.TestStreamlitUI.test_all_nine_rx_fields_are_editable_selections) ... skipped 'Streamlit is not installed: real UI execution not verified.'
+test_all_advanced_numeric_lists_start_zero (test_ui.TestStreamlitUI.test_all_advanced_numeric_lists_start_zero) ... skipped 'Streamlit is not installed: real UI execution not verified.'
+test_all_nine_rx_fields_are_editable_zero_first_lists (test_ui.TestStreamlitUI.test_all_nine_rx_fields_are_editable_zero_first_lists) ... skipped 'Streamlit is not installed: real UI execution not verified.'
 test_changed_input_hides_stale_result (test_ui.TestStreamlitUI.test_changed_input_hides_stale_result) ... skipped 'Streamlit is not installed: real UI execution not verified.'
 test_changed_next_power (test_ui.TestStreamlitUI.test_changed_next_power) ... skipped 'Streamlit is not installed: real UI execution not verified.'
 test_clear_removes_results (test_ui.TestStreamlitUI.test_clear_removes_results) ... skipped 'Streamlit is not installed: real UI execution not verified.'
-test_clockwise_demo (test_ui.TestStreamlitUI.test_clockwise_demo) ... skipped 'Streamlit is not installed: real UI execution not verified.'
 test_consent_required (test_ui.TestStreamlitUI.test_consent_required) ... skipped 'Streamlit is not installed: real UI execution not verified.'
-test_counterclockwise_demo (test_ui.TestStreamlitUI.test_counterclockwise_demo) ... skipped 'Streamlit is not installed: real UI execution not verified.'
-test_custom_candidate_selection (test_ui.TestStreamlitUI.test_custom_candidate_selection) ... skipped 'Streamlit is not installed: real UI execution not verified.'
+test_custom_candidate_selection_includes_zero (test_ui.TestStreamlitUI.test_custom_candidate_selection_includes_zero) ... skipped 'Streamlit is not installed: real UI execution not verified.'
 test_empty_values_validation (test_ui.TestStreamlitUI.test_empty_values_validation) ... skipped 'Streamlit is not installed: real UI execution not verified.'
-test_initial_ui (test_ui.TestStreamlitUI.test_initial_ui) ... skipped 'Streamlit is not installed: real UI execution not verified.'
-test_no_observed_rotation_input (test_ui.TestStreamlitUI.test_no_observed_rotation_input) ... skipped 'Streamlit is not installed: real UI execution not verified.'
+test_initial_ui_numbering (test_ui.TestStreamlitUI.test_initial_ui_numbering) ... skipped 'Streamlit is not installed: real UI execution not verified.'
+test_no_demo_buttons_or_rotation_input (test_ui.TestStreamlitUI.test_no_demo_buttons_or_rotation_input) ... skipped 'Streamlit is not installed: real UI execution not verified.'
+test_reference_case_calculates (test_ui.TestStreamlitUI.test_reference_case_calculates) ... skipped 'Streamlit is not installed: real UI execution not verified.'
 test_requested_axis_choices (test_ui.TestStreamlitUI.test_requested_axis_choices) ... skipped 'Streamlit is not installed: real UI execution not verified.'
 test_requested_power_choices (test_ui.TestStreamlitUI.test_requested_power_choices) ... skipped 'Streamlit is not installed: real UI execution not verified.'
-test_spherical_over_refraction (test_ui.TestStreamlitUI.test_spherical_over_refraction) ... skipped 'Streamlit is not installed: real UI execution not verified.'
 test_undetermined_rotation_blocks_results (test_ui.TestStreamlitUI.test_undetermined_rotation_blocks_results) ... skipped 'Streamlit is not installed: real UI execution not verified.'
+test_zero_threshold_accepted (test_ui.TestStreamlitUI.test_zero_threshold_accepted) ... skipped 'Streamlit is not installed: real UI execution not verified.'
 test_candidate_and_best_marker_counts (test_visuals.TestVisuals.test_candidate_and_best_marker_counts) ... ok
 test_curve_endpoints_periodic (test_visuals.TestVisuals.test_curve_endpoints_periodic) ... ok
 test_figures_serialize_without_non_finite_values (test_visuals.TestVisuals.test_figures_serialize_without_non_finite_values) ... ok
 test_frontal_clockwise_marker_moves_left (test_visuals.TestVisuals.test_frontal_clockwise_marker_moves_left) ... ok
 
 ----------------------------------------------------------------------
-Ran 102 tests in 1.062s
+Ran 112 tests in 0.972s
 
 OK (skipped=15)

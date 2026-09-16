@@ -59,8 +59,8 @@ class Case:
             raise ValueError("回転量は−90〜+90°で設定してください。")
         if not 0 <= self.rotation_half_width_deg <= 30:
             raise ValueError("回転変動幅は0〜30°で設定してください。")
-        if not 0.05 <= self.discrepancy_threshold_D <= 5:
-            raise ValueError("確認閾値は0.05〜5.00 Dで設定してください。")
+        if not 0 <= self.discrepancy_threshold_D <= 5:
+            raise ValueError("確認閾値は0〜5.00 Dで設定してください。")
         object.__setattr__(self, "next_rotation_cw", nr)
         object.__setattr__(self, "next_lens", self.next_lens or self.lens)
         object.__setattr__(self, "axes", clean_axes(self.axes))

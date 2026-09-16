@@ -1,10 +1,10 @@
-# v0.2.0 計算仕様：実測回転入力を使わない逆モデル
+# v0.3.0 計算仕様：実測回転入力を使わない逆モデル
 
 本仕様は臨床未検証です。数学表現の文献がこのアプリの臨床妥当性を検証したものではありません。
 
 ## 入力と測定面
 
-B：01の必要矯正、L：02のSCL表示度数、R：04のSCL装用下の追加矯正。
+B：01の必要矯正、L：02のSCL表示度数、R：03のSCL装用下の追加矯正。
 
 B、Rはそれぞれの頂点間距離を用い、SとS+Cの両主経線を `F_cornea=F_spectacle/(1-d*F_spectacle)` で角膜面へ換算します。Lは角膜面とします。これは薄レンズ・同一面近似です。
 
@@ -62,7 +62,7 @@ S/Cの変更は既存の詳細設定として残しますが、固定した回�
 
 ## 実装と後方互換
 
-逆モデル・入力検証・推定結果のラベル付けはapp.pyに集約しています。旧engineの既知回転APIは変更せず再利用します。JSONでは実測回転の入力フィールドを出力せず、`rotation_estimation` と `assumptions.rotation_was_measured=false` を記録します。出力の版はapp.pyが0.2.0に設定します。
+逆モデル・入力検証・推定結果のラベル付けはapp.pyに集約しています。engineの既知回転API・光学数式は維持します。数値リストを0始まりにそろえるため、不一致注意表示の閾値の許容下限のみ0.05 Dから0 Dへ変更しました。軸推定を保留するMIN_INFERENCE_C=0.05 Dとは別の設定です。JSONでは実測回転の入力フィールドを出力せず、`rotation_estimation` と `assumptions.rotation_was_measured=false` を記録します。出力の版はapp.pyが0.3.0に設定します。
 
 ## 参考
 
@@ -71,3 +71,7 @@ S/Cの変更は既存の詳細設定として残しますが、固定した回�
 [2] CooperVision. Toric Fitting Guidelines. https://coopervision.net.au/practitioner/fitting-tips-and-tools/toolkits/biofinity/toric-fitting-guidelines
 
 文献・メーカー資料は数学表現と回転符号の参考です。本稿の逆推定方式の臨床検証資料ではありません。
+
+## v0.3.0の入力仕様
+
+01・03はS/Cリスト0.25 D、Axリスト5°、02はS/Cリスト0.25 D、Axリスト10°です。リストは0始まり、直接入力の刻み制限はありません。有限値・範囲・円柱符号の検証は維持します。デモは画面から削除しました。

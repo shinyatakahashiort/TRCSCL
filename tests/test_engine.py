@@ -141,7 +141,7 @@ class TestEngine(unittest.TestCase):
     def test_invalid_case_parameters(self):
         for kwargs in [{"eye":"OU"},{"rotation_cw":91},{"next_rotation_cw":-91},
                        {"rotation_half_width_deg":31},{"axes":()},
-                       {"discrepancy_threshold_D":0},{"rotation_cw":float("nan")}]:
+                       {"discrepancy_threshold_D":-0.01},{"rotation_cw":float("nan")}]:
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                 demo(**kwargs)
 
