@@ -1,11 +1,12 @@
-"""Toric SCL Axis Planner 0.3.0.
+"""Toric SCL Axis Planner 0.3.1.
 
 Run: python -m streamlit run app.py
-UI update: zero-first lists, unrestricted-step direct entry, renumbered sections, no demos.
+UI update: sections 01/03 SPH lists ascend from -20 D to +20 D around 0.
+Only these two fields default to 0.00 D. Direct entry remains unrestricted by list step.
 Rotation is ESTIMATED from baseline minus over-refraction, never assumed zero.
 Clinical validity of this inverse model has NOT been established.
-Update app.py and engine.py together in an existing installation.
-engine.py additionally permits a 0 D discrepancy-alert threshold; optics are unchanged.
+Replace only app.py in the preceding 0.3.0 installation.
+No changes to calculation functions or other selection lists.
 """
 from __future__ import annotations
 
@@ -26,7 +27,7 @@ from engine import (
 )
 from visuals import curve_figure, axis_figure
 
-VERSION = "0.3.0"
+VERSION = "0.3.1"
 SCHEMA_VERSION = "3.0"
 # A conservative numerical guard, NOT a validated clinical cutoff.
 MIN_INFERENCE_C = 0.05
@@ -40,10 +41,10 @@ GRID_OPTIONS = ["10°刻み（仮の候補）", "5°刻み（仮の候補）", "
 INPUT_STEPS = {"baseline": ("0.25", "5"), "lens": ("0.25", "10"), "over": ("0.25", "5")}
 STATE_DEFAULTS = {
     "eye": "右眼 OD",
-    "baseline_s": None, "baseline_c": None, "baseline_a": None,
+    "baseline_s": "0.00", "baseline_c": None, "baseline_a": None,
     "baseline_vertex": "12.0",
     "lens_s": None, "lens_c": None, "lens_a": None,
-    "over_s": None, "over_c": None, "over_a": None, "over_vertex": "12.0",
+    "over_s": "0.00", "over_c": None, "over_a": None, "over_vertex": "12.0",
     "measurement": "他覚的屈折（SCL装用下）", "grid_mode": GRID_OPTIONS[0],
     "available_axes": ["10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180"],
     "change_power": False, "next_s": None, "next_c": None,
@@ -151,6 +152,44 @@ def numeric_choice(label: str, key: str, minimum: str, maximum: str, step: str,
                  placeholder="選択、または入力してEnter", help=help_text)
 
 
+@lru_cache(maxsize=1)
+def refraction_s_options() -> tuple[str, ...]:
+    """Ascending 0.25 D list for 01/03 SPH only; 0 is the central entry.
+
+    The dropdown contains 161 exact values from -20.00 to +20.00 D.
+    Direct entries are still checked against read_rx's original numeric limits,
+    not this convenience list, and are never rounded to its 0.25 D grid.
+    """
+    return tuple(f"{Decimal(i) / Decimal(4):.2f}" for i in range(-80, 81))
+
+
+def signed_s_label(value: object) -> str:
+    """Show + on positive built-in options without modifying returned values."""
+    text = str(value)
+    if text in refraction_s_options() and Decimal(text) > 0:
+        return "+" + text
+    return text
+
+
+def refraction_s_choice(key: str) -> None:
+    """Keep existing values; start an empty 01/03 SPH at the central 0 option."""
+    if key not in ("baseline_s", "over_s"):
+        raise ValueError("0中心のSリストは01・03専用です。")
+    # This runs before the widget is rendered. It also migrates an unset value
+    # from v0.3.0 without replacing a nonempty or manually entered value.
+    if st.session_state.get(key) is None:
+        st.session_state[key] = "0.00"
+    st.selectbox(
+        "S / SPH（D）", refraction_s_options(), index=None, key=key,
+        format_func=signed_s_label, accept_new_options=True,
+        placeholder="選択、または入力してEnter",
+        help=("リストは−20.00〜＋20.00 D、0.25 D刻みです。"
+              "0.00 Dの上がマイナス、下がプラスです。"
+              "初期値は0.00 Dですので、測定値に合わせて変更してください。"
+              "直接入力は従来の範囲（−30〜＋25 D）内で刻み制限なく入力できます。"),
+    )
+
+
 def init_state() -> None:
     # A schema change clears obsolete rotation keys and previously displayed results.
     if st.session_state.get("_schema") != SCHEMA_VERSION:
@@ -184,7 +223,10 @@ def rx_inputs(prefix: str) -> None:
     power_step, axis_step = INPUT_STEPS[prefix]
     c1, c2, c3 = st.columns(3)
     with c1:
-        numeric_choice("S / SPH（D）", f"{prefix}_s", "-30", "25", power_step)
+        if prefix in ("baseline", "over"):
+            refraction_s_choice(f"{prefix}_s")
+        else:
+            numeric_choice("S / SPH（D）", f"{prefix}_s", "-30", "25", power_step)
     with c2:
         numeric_choice("C / CYL（D）", f"{prefix}_c", "-15", "0" if prefix == "lens" else "15", power_step)
     with c3:
@@ -194,6 +236,7 @@ def rx_inputs(prefix: str) -> None:
     if prefix == "lens":
         st.caption("容器・処方に記載されたSCLの表示度数です。マイナス円柱表記で入力してください。")
     else:
+        st.caption("Sのリスト：−20.00〜＋20.00 D。初期値0.00 Dから、上がマイナス・下がプラスです。")
         st.caption("プラス円柱も入力できます。C=0のとき、Axは空欄で構いません。")
 
 
@@ -401,7 +444,7 @@ def main() -> None:
     st.title("トーリックSCL 軸選択シミュレーター")
     st.write("装用前・SCL度数・装用後の屈折値から、次に試す **表示軸** を比較します。回転の入力は不要です。")
     st.warning("教育・研究用／臨床未検証です。回転は屈折値からの推定であり、結果だけで処方を確定しないでください。")
-    st.caption("数値リストは0から始まります。数値を直接入力してEnterで確定することもできます。直接入力は刻みに関係なく、範囲内の任意の数値に対応します。")
+    st.caption("01・03のSは0.00 Dを中心に、上がマイナス・下がプラスです。その他の数値リストは0から始まります。直接入力してEnterで確定することもでき、刻み制限・自動丸めはありません。")
     controls, eye_column = st.columns([3, 1])
     with controls:
         st.button("入力をクリア", on_click=clear_inputs)
