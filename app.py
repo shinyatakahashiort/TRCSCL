@@ -1,11 +1,13 @@
-"""Toric SCL Axis Planner 0.4.0.
+"""Toric SCL Axis Planner 0.4.1.
 
 Run: python -m streamlit run app.py
 UI update: sections 01/03 SPH lists ascend from -20 D to +20 D around 0.
 Only these two fields default to 0.00 D. Direct entry remains unrestricted by list step.
 Rotation is ESTIMATED from baseline minus over-refraction, never assumed zero.
 Clinical validity of this inverse model has NOT been established.
-Replace only app.py in the preceding 0.3.1 installation.
+Replace only app.py in the preceding 0.4.0 installation.
+Adds a visible usage notice and includes it in all downloadable reports.
+Optical calculations and input options are unchanged.
 Adds an independent baseline-only, two-meridian vertex conversion panel.
 Theoretical powers and explicitly rounded 0.25 D reference powers are separate.
 Existing input lists and the axis/rotation inference calculation are unchanged.
@@ -15,6 +17,8 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from functools import lru_cache
+import csv
+import io
 import json
 import unicodedata
 
@@ -25,12 +29,31 @@ from optics import (
     signed_axis_difference, to_cornea, to_vector,
 )
 from engine import (
-    Analysis, Case, REFERENCES, analyze, csv_export, fmt_axis, fmt_rx,
+    Analysis, Case, REFERENCES, analyze, csv_export as _engine_csv_export, fmt_axis, fmt_rx,
 )
 from visuals import curve_figure, axis_figure
 
-VERSION = "0.4.0"
+VERSION = "0.4.1"
 SCHEMA_VERSION = "3.0"
+# This version tracks notice wording, not a clinical approval or consent record.
+USAGE_NOTICE_VERSION = "1.0"
+USAGE_NOTICE = (
+    "本アプリが表示するSCL度数・軸・予測残余屈折値は、入力値と一定の光学的仮定に基づく参考計算です。"
+    "計算結果の正確性、個々の患者への適合性、視力改善および安全性を保証するものではありません。"
+    "本アプリの臨床的有効性・安全性は検証されていません。"
+    "結果のみで処方を決定せず、独立した計算による照合、実際のレンズ回転・安定性、"
+    "装用後の視力、自覚的追加矯正およびフィッティングを確認し、眼科医が最終判断してください。"
+)
+USAGE_CONFIRMATION_LABEL = (
+    "使用上の注意と測定面を確認し、結果の正確性・患者への適合性・視力改善・安全性が保証されないこと、"
+    "回転は推定値であり、結果のみで処方を決定せず眼科医の最終判断が必要なことを理解した"
+)
+
+
+def show_usage_notice() -> None:
+    """Always visible; never hide the general notice inside an expander."""
+    st.warning("**使用上の注意**\n\n" + USAGE_NOTICE)
+
 # A conservative numerical guard, NOT a validated clinical cutoff.
 MIN_INFERENCE_C = 0.05
 INFERENCE_NOTE = (
@@ -94,6 +117,8 @@ class VertexSCLRecommendation:
             "product_specifications_checked": False,
             "written_back_to_02": False,
             "note": VERTEX_NOTE,
+            "usage_notice_version": USAGE_NOTICE_VERSION,
+            "usage_notice": USAGE_NOTICE,
         }
 
 
@@ -160,6 +185,7 @@ def vertex_rx_text(rx: Rx, digits: int = 3) -> str:
 def vertex_summary(rec: VertexSCLRecommendation, eye: str = "") -> str:
     return "\n".join([
         f"トーリックSCL 軸選択 v{VERSION}｜01の頂点間距離補正",
+        "【使用上の注意】", USAGE_NOTICE,
         f"対象眼：{eye}" if eye else "対象眼：未指定",
         f"01 自覚的屈折値：{vertex_rx_text(rec.original, 6)}",
         f"頂点間距離：{rec.vertex_mm:g} mm → 角膜面 0 mm",
@@ -184,6 +210,7 @@ def show_baseline_scl_recommendation() -> None:
     if rec is None:
         st.caption("01のS・C・Axと頂点間距離を入力すると自動表示します。C=0ではAx不要です。02・03の入力は不要です。")
         return
+    show_usage_notice()
     exact, rounded = rec.theoretical, rec.quarter_diopter
     st.caption(f"01の入力を使用 ／ VD {rec.vertex_mm:g} mm → 0 mm ／ マイナス円柱表記")
     st.markdown("**① 角膜面での理論値（0.25 Dへの丸め前）**")
@@ -360,6 +387,19 @@ def refraction_s_choice(key: str) -> None:
     )
 
 
+def ensure_current_notice_acknowledgement() -> None:
+    """New wording requires reconfirmation; preserve all entered clinical values.
+
+    This is only an in-session acknowledgement, not patient informed consent,
+    a legal waiver, or verification of clinical validity.
+    """
+    if st.session_state.get("_usage_notice_version") != USAGE_NOTICE_VERSION:
+        st.session_state["consent"] = False
+        for key in ("_result", "_estimate", "_result_signature"):
+            st.session_state.pop(key, None)
+        st.session_state["_usage_notice_version"] = USAGE_NOTICE_VERSION
+
+
 def init_state() -> None:
     # A schema change clears obsolete rotation keys and previously displayed results.
     if st.session_state.get("_schema") != SCHEMA_VERSION:
@@ -367,6 +407,7 @@ def init_state() -> None:
     for key, value in STATE_DEFAULTS.items():
         if key not in st.session_state:
             st.session_state[key] = list(value) if isinstance(value, list) else value
+    ensure_current_notice_acknowledgement()
 
 
 def clear_inputs() -> None:
@@ -377,6 +418,7 @@ def clear_inputs() -> None:
     for key, value in STATE_DEFAULTS.items():
         st.session_state[key] = list(value) if isinstance(value, list) else value
     st.session_state["_schema"] = SCHEMA_VERSION
+    st.session_state["_usage_notice_version"] = USAGE_NOTICE_VERSION
 
 
 def input_signature() -> str:
@@ -386,6 +428,8 @@ def input_signature() -> str:
         data.pop("next_c", None)
     if data["grid_mode"] != GRID_OPTIONS[3]:
         data.pop("available_axes", None)
+    data["_usage_notice_version"] = USAGE_NOTICE_VERSION
+    data["_app_version"] = VERSION
     return json.dumps(data, ensure_ascii=False, sort_keys=True, allow_nan=False)
 
 
@@ -479,6 +523,8 @@ def export_payload(result: Analysis, estimate: RotationEstimate) -> dict:
     data = result.to_dict()
     data["app_version"] = VERSION
     data["schema_version"] = SCHEMA_VERSION
+    data["usage_notice_version"] = USAGE_NOTICE_VERSION
+    data["usage_notice"] = USAGE_NOTICE
     data["model_warning"] = INFERENCE_NOTE
     data["basis"] = "baseline minus over-refraction estimates lens orientation; fitted nominal SCL plus over-refraction estimates target"
     data["rotation_estimation"] = estimate.to_dict()
@@ -495,16 +541,35 @@ def export_payload(result: Analysis, estimate: RotationEstimate) -> dict:
                            "next_rotation_equals_estimated_current_rotation": True,
                            "estimated_next_rotation_cw_deg": estimate.clockwise_deg,
                            "baseline_used_in_estimation_not_independent_validation": True}
-    data["result"]["warnings"] = [INFERENCE_NOTE, *result.warnings]
+    data["result"]["warnings"] = [USAGE_NOTICE, INFERENCE_NOTE, *result.warnings]
     data["initial_scl_from_baseline"] = recommend_scl_from_baseline(
         result.case.baseline, result.case.baseline_vertex_mm).to_dict()
     data["sensitivity_scope"] = "Next-rotation scenarios only; excludes estimation/refraction error. NOT a confidence interval."
     return data
 
 
+def csv_export(result: Analysis) -> bytes:
+    """Preserve the numeric CSV columns; attach the notice to every candidate."""
+    source = io.StringIO(_engine_csv_export(result).decode("utf-8-sig"), newline="")
+    reader = csv.DictReader(source)
+    fields = list(reader.fieldnames or []) + ["usage_notice_version", "usage_notice"]
+    output = io.StringIO(newline="")
+    writer = csv.DictWriter(output, fieldnames=fields)
+    writer.writeheader()
+    for row in reader:
+        row["app_version"] = VERSION
+        row["basis"] = "inferred_rotation_from_baseline_minus_overref;fitted_nominal_SCL_plus_overref"
+        row["warning"] = " | ".join((INFERENCE_NOTE, *result.warnings))
+        row["usage_notice_version"] = USAGE_NOTICE_VERSION
+        row["usage_notice"] = USAGE_NOTICE
+        writer.writerow(row)
+    return output.getvalue().encode("utf-8-sig")
+
+
 def summary_export(result: Analysis, estimate: RotationEstimate) -> str:
     c = result.case
-    lines = [f"トーリックSCL 軸選択 v{VERSION}", "回転未測定・屈折値からの推定モデル", INFERENCE_NOTE,
+    lines = [f"トーリックSCL 軸選択 v{VERSION}", "【使用上の注意】", USAGE_NOTICE,
+             "回転未測定・屈折値からの推定モデル", INFERENCE_NOTE,
              f"対象眼：{c.eye} / {c.source}", f"01 装用前：{fmt_rx(c.baseline)} / VD {c.baseline_vertex_mm:g} mm",
              f"02 SCL表示度数：{fmt_rx(c.lens)}", f"03 装用後：{fmt_rx(c.over_refraction)} / VD {c.over_vertex_mm:g} mm",
              f"眼上軸の推定：{fmt_axis(estimate.on_eye_axis_deg)}",
@@ -539,6 +604,7 @@ def show_results(result: Analysis, estimate: RotationEstimate) -> None:
     c, best = result.case, result.best
     st.divider()
     st.subheader("計算結果｜次に試すレンズの比較（推定モデル）")
+    show_usage_notice()
     st.info(INFERENCE_NOTE)
     st.caption(f"{c.eye} / {c.source} / 残余屈折は角膜面で比較")
     for warning in result.warnings:
@@ -620,7 +686,8 @@ def main() -> None:
     st.caption(f"TORIC SCL · AXIS PLANNER · v{VERSION}")
     st.title("トーリックSCL 軸選択シミュレーター")
     st.write("01の自覚的屈折値から、頂点間距離を補正した **SCL度数の目安** を表示します。02・03も入力すると、次に試す **表示軸** を比較できます。回転の入力は不要です。")
-    st.warning("教育・研究用／臨床未検証です。回転は屈折値からの推定であり、結果だけで処方を確定しないでください。")
+    show_usage_notice()
+    st.caption("教育・研究用／臨床未検証です。回転は屈折値からの推定であり、結果だけで処方を確定しないでください。")
     st.caption("01・03のSは0.00 Dを中心に、上がマイナス・下がプラスです。その他の数値リストは0から始まります。直接入力してEnterで確定することもでき、刻み制限・自動丸めはありません。")
     controls, eye_column = st.columns([3, 1])
     with controls:
@@ -669,12 +736,12 @@ def main() -> None:
         st.caption("実測回転の入力ではなく、予測回転が変わった場合の仮想比較です。±5°は信頼区間ではありません。")
         numeric_choice("モデル不一致の確認閾値（D・便宜的）", "discrepancy_threshold", "0", "5", "0.05",
                        help_text="0 Dを選ぶと、ごく小さい不一致でも注意を表示します。計算結果を変更する設定ではありません。")
-    st.checkbox("測定面を確認し、回転は推定値で結果は処方確定値ではないことを理解した", key="consent")
+    st.checkbox(USAGE_CONFIRMATION_LABEL, key="consent", help=USAGE_NOTICE)
     if st.button("残余乱視が最小になる軸を計算", type="primary", use_container_width=True):
         for key in ("_result", "_estimate", "_result_signature", "_demo"):
             st.session_state.pop(key, None)
         if not st.session_state["consent"]:
-            st.error("上の確認欄にチェックしてから計算してください。")
+            st.error("使用上の注意を確認し、上の確認欄にチェックしてから計算してください。")
         else:
             try:
                 case, estimate = build_case()
